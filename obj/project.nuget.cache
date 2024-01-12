@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "TNHiFn0ETZ1cVDYlalJau1Ln1P4xxgHl7bezTmYWb+R+E+YsRhz8ZD6CNsgLwAFZ1Knm2Hzq5YA9JcxtHxDVEg==",
+  "success": true,
+  "projectFilePath": "/home/rakarake/Projects/game-eninges/engineless/engineless.csproj",
+  "expectedPackageFiles": [
+    "/home/rakarake/.nuget/packages/autofac/6.5.0/autofac.6.5.0.nupkg.sha512",
+    "/home/rakarake/.nuget/packages/system.diagnostics.diagnosticsource/4.7.1/system.diagnostics.diagnosticsource.4.7.1.nupkg.sha512"
+  ],
+  "logs": []
+}
