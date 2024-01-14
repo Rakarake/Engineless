@@ -14,19 +14,20 @@
         pkgs = import nixpkgs { inherit system; };
       in
       {
-        #defaultPackage = pkgs.buildDotnetModule rec {
-        #  pname = "engineless";
-        #  version = "0.0.1";
-        #  src = ./.;
-        #  nugetDeps = nuget-packageslock2nix.lib {
-        #    system = system;
-        #    name = pname;
-        #    lockfiles = [
-        #      ./packages.lock.json
-        #    ];
-        #  };
-        #};
-        devShell = pkgs.mkShell { buildInputs = [ pkgs.dotnet-sdk_8 ]; };
+        defaultPackage = pkgs.buildDotnetModule rec {
+          pname = "engineless";
+          version = "0.0.1";
+          src = ./.;
+          dotnet-sdk = pkgs.dotnet-sdk_8;
+          nugetDeps = nuget-packageslock2nix.lib {
+            system = system;
+            name = pname;
+            lockfiles = [
+              ./packages.lock.json
+            ];
+          };
+        };
+        #devShell = pkgs.mkShell { buildInputs = [ pkgs.dotnet-sdk_8 ]; };
       }
     );
 }
