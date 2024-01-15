@@ -18,7 +18,7 @@
           pname = "engineless";
           version = "0.0.1";
           src = ./.;
-          dotnet-sdk = pkgs.dotnet-sdk_8;
+          dotnet-sdk = pkgs.dotnet-sdk_7;
           nugetDeps = nuget-packageslock2nix.lib {
             system = system;
             name = pname;
