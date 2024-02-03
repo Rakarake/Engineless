@@ -12,13 +12,14 @@
     flake-utils.lib.eachDefaultSystem (system:
       let 
         pkgs = import nixpkgs { inherit system; };
+        dotnetPackage = pkgs.dotnet-sdk_8;
       in
       {
         defaultPackage = pkgs.buildDotnetModule rec {
           pname = "engineless";
           version = "0.0.1";
           src = ./.;
-          dotnet-sdk = pkgs.dotnet-sdk_7;
+          dotnet-sdk = dotnetPackage;
           nugetDeps = nuget-packageslock2nix.lib {
             system = system;
             name = pname;
@@ -27,7 +28,7 @@
             ];
           };
         };
-        devShell = pkgs.mkShell { buildInputs = [ pkgs.dotnet-sdk_7 ]; };
+        devShell = pkgs.mkShell { buildInputs = [ dotnetPackage ]; };
       }
     );
 }
