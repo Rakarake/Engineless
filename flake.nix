@@ -27,7 +27,7 @@
             ];
           };
         };
-        #devShell = pkgs.mkShell { buildInputs = [ pkgs.dotnet-sdk_8 ]; };
+        devShell = pkgs.mkShell { buildInputs = [ pkgs.dotnet-sdk_7 ]; };
       }
     );
 }
