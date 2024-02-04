@@ -11,6 +11,12 @@
           "System.Diagnostics.DiagnosticSource": "4.7.1"
         }
       },
+      "ppy.SDL2-CS": {
+        "type": "Direct",
+        "requested": "[1.0.693-alpha, )",
+        "resolved": "1.0.693-alpha",
+        "contentHash": "ka8haqo4vEhf1AzuOCLUk7g+ZPKWhDiN80QXndRI9kiDo3LLD7xDefNJGQnKYwitaG0J85FwJly6zjat2z3/hg=="
+      },
       "System.Diagnostics.DiagnosticSource": {
         "type": "Transitive",
         "resolved": "4.7.1",

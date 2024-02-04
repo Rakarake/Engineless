@@ -10,5 +10,6 @@
 
   <ItemGroup>
     <PackageReference Include="Autofac" Version="6.5.0" />
+    <PackageReference Include="ppy.SDL2-CS" Version="1.0.693-alpha" />
   </ItemGroup>
 </Project>

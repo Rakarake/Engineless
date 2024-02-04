@@ -13,6 +13,15 @@
       let 
         pkgs = import nixpkgs { inherit system; };
         dotnetPackage = pkgs.dotnet-sdk_8;
+        buildDeps = with pkgs; [
+          dotnetPackage
+          SDL2
+          SDL2.dev
+          SDL2_gfx
+          SDL2_image
+          SDL2_mixer
+          SDL2_ttf
+        ];
       in
       {
         defaultPackage = pkgs.buildDotnetModule rec {
