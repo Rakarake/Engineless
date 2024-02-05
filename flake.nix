@@ -13,16 +13,16 @@
       let 
         pkgs = import nixpkgs { inherit system; };
         dotnetPackage = pkgs.dotnet-sdk_8;
-        buildDeps = with pkgs; [
+        deps = with pkgs; [
           dotnetPackage
           SDL2
-          SDL2.dev
           SDL2_gfx
           SDL2_image
           SDL2_mixer
           SDL2_ttf
-          libxkbcommon wayland
-          xorg.libX11 xorg.libXcursor xorg.libXi xorg.libXrandr 
+
+          gcc
+          pkg-config
         ];
       in
       {
@@ -31,6 +31,7 @@
           version = "0.0.1";
           src = ./.;
           dotnet-sdk = dotnetPackage;
+          runtimeDeps = deps;
           nugetDeps = nuget-packageslock2nix.lib {
             system = system;
             name = pname;
@@ -39,7 +40,7 @@
             ];
           };
         };
-        devShell = pkgs.mkShell { buildInputs = [ dotnetPackage ]; };
+        devShell = pkgs.mkShell { packages = deps; };
       }
     );
 }

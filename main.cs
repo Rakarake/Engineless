@@ -15,7 +15,7 @@ namespace HelloWorld
             {
                 Console.WriteLine($"There was an issue initializing SDL. {SDL.SDL_GetError()}");
             }
-        
+
             // Create a new window given a title, size, and passes it a flag indicating it should be shown.
             window = SDL.SDL_CreateWindow(
                 "SDL .NET 6 Tutorial",
@@ -24,19 +24,19 @@ namespace HelloWorld
                 640, 
                 480, 
                 SDL.SDL_WindowFlags.SDL_WINDOW_SHOWN);
-        
+
             if (window == IntPtr.Zero)
             {
                 Console.WriteLine($"There was an issue creating the window. {SDL.SDL_GetError()}");
             }
-        
+
             // Creates a new SDL hardware renderer using the default graphics device with VSYNC enabled.
             renderer = SDL.SDL_CreateRenderer(
                 window,
                 -1,
                 SDL.SDL_RendererFlags.SDL_RENDERER_ACCELERATED |
                 SDL.SDL_RendererFlags.SDL_RENDERER_PRESENTVSYNC);
-        
+
             if (renderer == IntPtr.Zero)
             {
                 Console.WriteLine($"There was an issue creating the renderer. {SDL.SDL_GetError()}");
@@ -60,6 +60,12 @@ namespace HelloWorld
                     case SDL.SDL_EventType.SDL_QUIT:
                         running = false;
                         break;
+                    case SDL.SDL_EventType.SDL_KEYDOWN:
+                        Console.WriteLine("Ok, key down");
+                        continue;
+                    default:
+                        Console.WriteLine($"Some unhandled event: {e.type}");
+                        continue;
                 }
             }
         }
