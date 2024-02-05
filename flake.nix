@@ -21,6 +21,8 @@
           SDL2_image
           SDL2_mixer
           SDL2_ttf
+          libxkbcommon wayland
+          xorg.libX11 xorg.libXcursor xorg.libXi xorg.libXrandr 
         ];
       in
       {
