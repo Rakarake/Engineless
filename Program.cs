@@ -49,16 +49,16 @@ while (running)
     }
 
     // Sets the color that the screen will be cleared with.
-    if (SDL.SDL_SetRenderDrawColor(renderer, 135, 206, 235, 255) < 0)
-    {
-        Console.WriteLine($"There was an issue with setting the render draw color. {SDL.SDL_GetError()}");
-    }
+    SDL.SDL_SetRenderDrawColor(renderer, 135, 206, 235, 255);
 
     // Clears the current render surface.
-    if (SDL.SDL_RenderClear(renderer) < 0)
-    {
-        Console.WriteLine($"There was an issue with clearing the render surface. {SDL.SDL_GetError()}");
-    }
+    SDL.SDL_RenderClear(renderer);
+
+    // Set the color to red before drawing our shape
+    SDL.SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+
+    // Draw a line from top left to bottom right
+    SDL.SDL_RenderDrawLine(renderer, 0, 0, 640, 480);
 
     // Switches out the currently presented render surface with the one we just did work on.
     SDL.SDL_RenderPresent(renderer);
