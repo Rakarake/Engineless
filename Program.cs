@@ -32,6 +32,9 @@ if (SDL_image.IMG_Init(SDL_image.IMG_InitFlags.IMG_INIT_PNG) == 0)
     Console.WriteLine($"There was an issue initilizing SDL2_Image {SDL_image.IMG_GetError()}");
 }
 
+// Test
+Test.TestClass.TestMethod();
+
 var running = true;
 
 // Main loop for the program
