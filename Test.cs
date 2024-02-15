@@ -17,6 +17,17 @@ namespace Test
             return f(1, "");
         }
 
+        private static void GenericSystem<T>() {
+        }
+
+        private static void GenericDelegators(Delegate method) {
+            Type t = typeof(OmegaStruct);
+            var x = GenericSystem<int>;
+            foreach (var xt in x.GetType().GetGenericArguments()) {
+                Console.WriteLine(xt);
+            }
+        }
+
         private static void SuperSystem(int a, string b, OmegaStruct c, System.Collections.Generic.Dictionary<int, int> d, System.Collections.Generic.Dictionary<int, string> e, (int, string, bool)[] f)
         {
         }
@@ -42,7 +53,8 @@ namespace Test
         public static void TestMethod()
         {
             System.Console.WriteLine("Yes");
-            Delegators(SuperSystem);
+            //Delegators(SuperSystem);
+            GenericDelegators(GenericSystem<int>);
         }
     }
 }
