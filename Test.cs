@@ -17,7 +17,7 @@ namespace Test
             return f(1, "");
         }
 
-        private static void SuperSystem(int a, string b, OmegaStruct c)
+        private static void SuperSystem(int a, string b, OmegaStruct c, System.Collections.Generic.Dictionary<int, int> d, System.Collections.Generic.Dictionary<int, string> e, (int, string, bool)[] f)
         {
         }
 
@@ -27,7 +27,15 @@ namespace Test
             ParameterInfo[] parameters = methodInfo.GetParameters();
             foreach (ParameterInfo parameter in parameters)
             {
-                Console.WriteLine(parameter.ParameterType.Name);
+                Type maybeTypeInsideArray = parameter.ParameterType.GetElementType();
+                if (maybeTypeInsideArray != null) {
+                    Console.WriteLine("Inside array --- " + maybeTypeInsideArray);
+                    Type[] types = maybeTypeInsideArray.GetGenericArguments();
+                    foreach (var t in types) {
+                        Console.WriteLine("OK:");
+                        Console.WriteLine(t);
+                    }
+                }
             }
         }
 

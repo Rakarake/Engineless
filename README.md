@@ -16,48 +16,27 @@ when inheriting Component. Strings are slow.
 
 
 Extremely simple entity / component instantiation.
+`Engineless.Start` handles systems that should be executed on startup, then
+begins the game loop.
 
-Classes Component and System only exists for readibility and some boilerplate,
-this is not an endorsement to ues inhereitance.
+Components can be any type.
+Systems can be any funciton.
+This is achieved using rutime type reflection (System.Reflection).
 
 ```cs
-import Engineless;
-
 void main() {
     Engineless.Start([
-        StartupSystem.Desc(),
+        StartupSystem,
     ]);
 }
 
-// Systems signal their arguments though 'Desc'
-class Startup extends System {
-    [int] Desc() {
-        // Returns a list of the id:s of the components we are interested in
-        // TODO does this work?
-        return [ StartupComponent.CID ]
-    }
-    void Call(ECS ecs, Dictionary<int, Component> components) {
-        // Have to cast component values
-        Transform transform = Transform.NewFromPostion(Vec3(1,2,3));
-        ecs.addNewEntity([transform]);
-        // TODO add MoveLeft system
-    }
-}
-
-class MoveLeft extends System {
-    [int] Desc() {
-        // Returns a list of the id:s of the components we are interested in
-        return [ TransformComponent.CID ]
-    }
-    void Call(ECS ecs, Dictionary<int, Component> components) {
-        Entity entity = new Entity();
-        Transform transform = Transform.NewFromPostion(Vec3(1,2,3));
-        entity.addComponent(transform);
-    }
+void Startup(ECS ecs, Engineless.StartupComponent _) {
+    ecs.
 }
 
 // Extends here gives us the CID (Component Identifier)
-class Transform extends Component {
+struct Transform extends Component {
+    public Transform {}
     public Vec3 pos = Vec3(0, 0, 0);
 }
 
