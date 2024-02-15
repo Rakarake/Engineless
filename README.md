@@ -22,22 +22,37 @@ begins the game loop.
 Components can be any type.
 Systems can be any funciton.
 This is achieved using rutime type reflection (System.Reflection).
+Entities don't really exist.
 
 ```cs
 void main() {
     Engineless.Start([
-        StartupSystem,
+        Startup,
     ]);
 }
 
 void Startup(ECS ecs, Engineless.StartupComponent _) {
-    ecs.
+    int entityId = ecs.newEntity([
+        Transform(1.7,2.1,3.0)
+    ]);
+    Color color = new Color(0.5, 0.2, 0.1);
+    ecs.add(entityId, color);
+    ecs.remove<Color>(entityId);
+}
+
+void MoveLeft(, List<(Transform, Color)> l) {
+    l.Item1.x -= 0.2 * delta;
 }
 
 // Extends here gives us the CID (Component Identifier)
-struct Transform extends Component {
+class Transform extends Component {
     public Transform {}
     public Vec3 pos = Vec3(0, 0, 0);
+}
+
+class Color extends Component {
+    public Color {}
+    public Vec3 rgb = Vec3(0, 0, 0);
 }
 
 ```
