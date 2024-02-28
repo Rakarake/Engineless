@@ -6,7 +6,7 @@ using Engineless;
 class ECSExample {
 
     void StartupSystem(IECS ecs) {
-        ecs.AddEntity(new List<Object>());
+        ecs.AddEntity(new List<Component>());
     }
 
     void SuperSystem(Query<DuckAspects> ok) {

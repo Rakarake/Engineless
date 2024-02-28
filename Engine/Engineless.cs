@@ -9,6 +9,7 @@ namespace Engineless {
         Update,
     }
 
+    public abstract class Component { public int entity = -1; }
     // These empty classes are used to what resources to fetch
     public class Query<T> { List<T> hits; }
     
@@ -16,7 +17,7 @@ namespace Engineless {
     public class Engine : IECS {
         private List<Delegate> updateSystems = new();
         private List<Delegate> startupSystems = new();
-        private Dictionary<Type, List<(int, Object)>> allComponents = new();
+        private Dictionary<Type, List<Component>> allComponents = new();
         private int entityIndex = 0;
         private bool running = true;
 
@@ -69,9 +70,13 @@ namespace Engineless {
                     if (queryTypes == null || queryTypes.Length == 0) {
                         // One argument
                         Console.WriteLine("One argument");
-                        systemArguments.Add(allComponents[typeArgument]);
+                        if (allComponents.ContainsKey(typeArgument)) {
+                            systemArguments.Add(allComponents[typeArgument]);
+                        } else {
+                            continue;
+                        }
                     } else {
-                        // Two arguments
+                        // Two or more arguments
                         Console.WriteLine("Two argument");
                     }
 
@@ -83,14 +88,15 @@ namespace Engineless {
             system.DynamicInvoke(systemArguments.ToArray());
         }
 
-        public void AddEntity(List<Object> components) {
+        public void AddEntity(List<Component> components) {
             Console.WriteLine("Adding Entity");
-            foreach (Object c in components) {
+            foreach (Component c in components) {
                 if (allComponents[c.GetType()] == null) {
                     // First component of this type
-                    allComponents[c.GetType()] = new List<(int, Object)>();
+                    allComponents[c.GetType()] = new List<Component>();
                 }
-                allComponents[c.GetType()].Add((entityIndex, c));
+                c.entity = entityIndex;
+                allComponents[c.GetType()].Add(c);
             }
             entityIndex += 1;
         }
@@ -99,6 +105,6 @@ namespace Engineless {
     // Resource passed to systems to provide functionality to create/remove
     // entities, components and systems
     public interface IECS {
-        public void AddEntity(List<Object> components);
+        public void AddEntity(List<Component> components);
     }
 }
