@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Linq;
 
 namespace Engineless {
 
@@ -78,6 +79,17 @@ namespace Engineless {
                     } else {
                         // Two or more arguments
                         Console.WriteLine("Two argument");
+                        // Only interested in the columns with the tuple types
+                        List<List<Component>> cs = new();
+                        foreach (Type t in queryTypes) {
+                            if (allComponents.ContainsKey(t)) {
+                                cs.Add(allComponents[t]);
+                            } else {
+                                continue;
+                            }
+                        }
+                        //cs.GroupBy(c =>)
+                        //var grouped = allComponents.GroupBy(c => c.Value);
                     }
 
                 } else {
