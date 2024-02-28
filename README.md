@@ -27,12 +27,13 @@ around an identifier.
 
 ```cs
 void main() {
-    Engineless.Start([
-        Startup,
-    ]);
+    Engineless.Engine e = new Engineless.Engine();
+    e
+        .AddSystem(Engineless.Events.Startup, Startup)
+        .Start()
 }
 
-void Startup(ECS ecs, Engineless.StartupComponent _) {
+void Startup(ECS ecs) {
     Entity entityId = ecs.newEntity([
         Transform(1.7,2.1,3.0)
     ]);

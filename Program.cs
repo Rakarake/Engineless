@@ -1,5 +1,12 @@
 ﻿using SDL2;
 using System;
+using System.Collections.Generic;
+using Engineless;
+
+ECSExample example = new();
+example.Example();
+
+// Test SDL
 
 // Initilizes SDL.
 if (SDL.SDL_Init(SDL.SDL_INIT_VIDEO) < 0)
