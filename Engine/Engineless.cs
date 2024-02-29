@@ -10,15 +10,15 @@ namespace Engineless {
         Update,
     }
 
-    public abstract class Component { public int entity = -1; }
+    public abstract class Component { }
     // These empty classes are used to what resources to fetch
-    public class Query<T> { List<T> hits; }
+    public class Query<T> { IEnumerable<KeyValuePair<int, T>> hits; }
     
     // State class for the ECS
     public class Engine : IECS {
         private List<Delegate> updateSystems = new();
         private List<Delegate> startupSystems = new();
-        private Dictionary<Type, List<Component>> allComponents = new();
+        private Dictionary<Type, Dictionary<int, Component>> allComponents = new();
         private int entityIndex = 0;
         private bool running = true;
 
@@ -81,34 +81,44 @@ namespace Engineless {
                         Console.WriteLine("Two argument");
                         // Only interested in the columns with the tuple types
                         // All must be present
-                        List<List<Component>> cs = new();
-                        bool didNotFindAllColumns = false;
+                        // Type needed to construct the tuples
+                        List<(Type, Dictionary<int, Component>)> cs = new();
+                        bool componentColumnsExist = true;
                         foreach (Type t in queryTypes) {
                             if (allComponents.ContainsKey(t)) {
-                                cs.Add(allComponents[t]);
+                                cs.Add((t, allComponents[t]));
                             } else {
-                                didNotFindAllColumns = true;
-                                break;
+                                componentColumnsExist = false;
                             }
                         }
-                        if (didNotFindAllColumns) { continue; }
+                        if (!componentColumnsExist) { continue; }
 
                         var smallest = cs.Aggregate(cs[0],
                             (shortest, next) =>
-                                next.Count < shortest.Count ? next : shortest);
+                                next.Item2.Count < shortest.Item2.Count ? next : shortest);
 
                         // Use shortest to check for tuple matches
                         cs.Remove(smallest);
-                        // The rest of the columns
-                        var rest = cs; 
-                        foreach (var component in smallest) {
-                            foreach (var column in rest) {
-                                
+                        var restOfColumns = cs;
+                        // List of tuples of the query
+                        List<Object> queryResult = new();
+                        foreach (var c in smallest.Item2) {
+                            List<(Type, Object)> tupleComponents = new() { (smallest.Item1, c.Value) };
+                            bool tupleComplete = true;
+                            foreach (var column in restOfColumns) {
+                                if (column.Item2.ContainsKey(c.Key)) {
+                                    tupleComponents.Add((column.Item1, column.Item2[c.Key]));
+                                } else {
+                                    tupleComplete = false;
+                                    break;
+                                }
                             }
+                            if (!tupleComplete) { continue; } 
+                            // Construct the tuple to add to queryResult
+                            queryResult.Add(GetTuple(tupleComponents));
+                            
                         }
-
-                        //var shortest = cs.Aggregate();
-                        //Console.WriteLine("Shortest: " + shortest);
+                        systemArguments.Add(queryResult);
                     }
 
                 } else {
@@ -116,7 +126,17 @@ namespace Engineless {
                 }
                 
             }
+            Console.WriteLine("Arguments to func: " + systemArguments);
             system.DynamicInvoke(systemArguments.ToArray());
+        }
+
+        public static Object GetTuple(List<(Type, Object)> input) {
+            Type genericType = Type.GetType("System.Tuple`" + input.Count);
+            Type[] typeArgs = input.Select(p => p.Item1).ToArray();
+            Object[] valueArgs = input.Select(p => p.Item2).ToArray();
+            Type specificType = genericType.MakeGenericType(typeArgs);
+            object[] constructorArguments = valueArgs.Cast<object>().ToArray();
+            return Activator.CreateInstance(specificType, constructorArguments);
         }
 
         public void AddEntity(List<Component> components) {
@@ -124,10 +144,9 @@ namespace Engineless {
             foreach (Component c in components) {
                 if (allComponents[c.GetType()] == null) {
                     // First component of this type
-                    allComponents[c.GetType()] = new List<Component>();
+                    allComponents[c.GetType()] = new();
                 }
-                c.entity = entityIndex;
-                allComponents[c.GetType()].Add(c);
+                allComponents[c.GetType()].Add(entityIndex, c);
             }
             entityIndex += 1;
         }

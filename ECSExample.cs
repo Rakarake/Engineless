@@ -9,7 +9,7 @@ class ECSExample {
         ecs.AddEntity(new List<Component>());
     }
 
-    void SuperSystem(Query<(DuckAspects, InspirationalQuote)> ok) {
+    void SuperSystem(IECS ecs, Query<(DuckAspects, InspirationalQuote)> ok) {
         
     }
 
