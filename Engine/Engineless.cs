@@ -64,19 +64,23 @@ namespace Engineless {
                     // Two cases:
                     // * One generic argument, provide that list directly
                     // * Tuple of arguments
-
                     // There is only one type argument of Query
                     Type typeArgument = parameter.ParameterType.GetGenericArguments()[0];
+
+                    // Create the query object
+                    var genericType = typeof(Query<>);
+                    var queryInstance = Activator.CreateInstance(genericType.MakeGenericType(typeArgument));
+                    var fieldInfo = genericType.GetField("hits");
                     Type[] queryTypes = typeArgument.GetGenericArguments();
+
                     if (queryTypes == null || queryTypes.Length == 0) {
                         // One argument
                         Console.WriteLine("One argument");
-                        if (allComponents.ContainsKey(typeArgument)) {
-                            systemArguments.Add(allComponents[typeArgument]);
-                        } else {
-                            systemArguments.Add(new());
-                            continue;
-                        }
+                        fieldInfo.SetValue(queryInstance,
+                                allComponents.ContainsKey(typeArgument) ?
+                                    allComponents[typeArgument] :
+                                    RCreateEmptyList(typeArgument));
+                        systemArguments.Add(queryInstance);
                     } else {
                         // Two or more arguments
                         Console.WriteLine("Two argument");
@@ -93,6 +97,7 @@ namespace Engineless {
                             }
                         }
                         if (!componentColumnsExist) { 
+                            fieldInfo.SetValue(queryInstance, RCreateEmptyList());
                             systemArguments.Add(new());
                             continue;
                         }
@@ -119,7 +124,7 @@ namespace Engineless {
                             }
                             if (!tupleComplete) { continue; } 
                             // Construct the tuple to add to queryResult
-                            queryResult.Add(GetTuple(tupleComponents));
+                            queryResult.Add(RGetTuple(tupleComponents));
                             
                         }
                         systemArguments.Add(queryResult);
@@ -135,15 +140,6 @@ namespace Engineless {
             system.DynamicInvoke(systemArguments.ToArray());
         }
 
-        public static Object GetTuple(List<(Type, Object)> input) {
-            Type genericType = Type.GetType("System.Tuple`" + input.Count);
-            Type[] typeArgs = input.Select(p => p.Item1).ToArray();
-            Object[] valueArgs = input.Select(p => p.Item2).ToArray();
-            Type specificType = genericType.MakeGenericType(typeArgs);
-            object[] constructorArguments = valueArgs.Cast<object>().ToArray();
-            return Activator.CreateInstance(specificType, constructorArguments);
-        }
-
         public void AddEntity(List<Component> components) {
             Console.WriteLine("Adding Entity");
             foreach (Component c in components) {
@@ -155,6 +151,21 @@ namespace Engineless {
             }
             entityIndex += 1;
         }
+
+        // Reflection helper methods ('R' is for reflection)
+        private Object RGetTuple(List<(Type, Object)> input) {
+            Type genericType = Type.GetType("System.Tuple`" + input.Count);
+            Type[] typeArgs = input.Select(p => p.Item1).ToArray();
+            Object[] valueArgs = input.Select(p => p.Item2).ToArray();
+            Type specificType = genericType.MakeGenericType(typeArgs);
+            object[] constructorArguments = valueArgs.Cast<object>().ToArray();
+            return Activator.CreateInstance(specificType, constructorArguments);
+        }
+
+        private Object RCreateEmptyList(Type t) {
+            return Activator.CreateInstance(typeof(List<>).MakeGenericType(t));
+        }
+
     }
 
     // Resource passed to systems to provide functionality to create/remove
