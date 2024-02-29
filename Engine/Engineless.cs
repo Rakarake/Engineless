@@ -74,6 +74,7 @@ namespace Engineless {
                         if (allComponents.ContainsKey(typeArgument)) {
                             systemArguments.Add(allComponents[typeArgument]);
                         } else {
+                            systemArguments.Add(new());
                             continue;
                         }
                     } else {
@@ -91,7 +92,10 @@ namespace Engineless {
                                 componentColumnsExist = false;
                             }
                         }
-                        if (!componentColumnsExist) { continue; }
+                        if (!componentColumnsExist) { 
+                            systemArguments.Add(new());
+                            continue;
+                        }
 
                         var smallest = cs.Aggregate(cs[0],
                             (shortest, next) =>
@@ -126,7 +130,8 @@ namespace Engineless {
                 }
                 
             }
-            Console.WriteLine("Arguments to func: " + systemArguments);
+            Console.WriteLine("SystemArguments:");
+            foreach (var e in systemArguments) { Console.WriteLine("  * " + e); }
             system.DynamicInvoke(systemArguments.ToArray());
         }
 
