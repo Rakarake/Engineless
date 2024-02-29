@@ -101,7 +101,9 @@ namespace Engineless {
                         }
                         if (!componentColumnsExist) { 
                             Console.WriteLine("SUPER LIST: " + RCreateEmptyList(typeArgument));
-                            fieldInfo.SetValue(queryInstance, RCreateEmptyList(typeArgument));
+                            fieldInfo.SetValue(queryInstance, RCreateEmptyList(
+                                        typeof(KeyValuePair<,>).MakeGenericType(typeof(int), typeArgument)
+                                        ));
                             systemArguments.Add(queryInstance);
                             continue;
                         }
