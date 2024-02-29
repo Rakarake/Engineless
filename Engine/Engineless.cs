@@ -68,9 +68,12 @@ namespace Engineless {
                     Type typeArgument = parameter.ParameterType.GetGenericArguments()[0];
 
                     // Create the query object
-                    var genericType = typeof(Query<>);
-                    var queryInstance = Activator.CreateInstance(genericType.MakeGenericType(typeArgument));
-                    var fieldInfo = genericType.GetField("hits");
+                    var queryGenericType = typeof(Query<>);
+                    var queryGenericTypeFulfilled = queryGenericType.MakeGenericType(typeArgument);
+                    var queryInstance = Activator.CreateInstance(queryGenericTypeFulfilled);
+                    Console.WriteLine("QueryInstance: " + queryInstance);
+                    var fieldInfo = queryGenericTypeFulfilled.GetField("hits", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+                    Console.WriteLine("FieldInfo: " + fieldInfo);
                     Type[] queryTypes = typeArgument.GetGenericArguments();
 
                     if (queryTypes == null || queryTypes.Length == 0) {
@@ -97,8 +100,9 @@ namespace Engineless {
                             }
                         }
                         if (!componentColumnsExist) { 
-                            fieldInfo.SetValue(queryInstance, RCreateEmptyList());
-                            systemArguments.Add(new());
+                            Console.WriteLine("SUPER LIST: " + RCreateEmptyList(typeArgument));
+                            fieldInfo.SetValue(queryInstance, RCreateEmptyList(typeArgument));
+                            systemArguments.Add(queryInstance);
                             continue;
                         }
 
@@ -122,7 +126,11 @@ namespace Engineless {
                                     break;
                                 }
                             }
-                            if (!tupleComplete) { continue; } 
+                            if (!tupleComplete) {
+                                fieldInfo.SetValue(queryInstance, RCreateEmptyList(typeArgument));
+                                systemArguments.Add(queryInstance);
+                                continue;
+                            } 
                             // Construct the tuple to add to queryResult
                             queryResult.Add(RGetTuple(tupleComponents));
                             
