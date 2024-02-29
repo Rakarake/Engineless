@@ -80,16 +80,35 @@ namespace Engineless {
                         // Two or more arguments
                         Console.WriteLine("Two argument");
                         // Only interested in the columns with the tuple types
+                        // All must be present
                         List<List<Component>> cs = new();
+                        bool didNotFindAllColumns = false;
                         foreach (Type t in queryTypes) {
                             if (allComponents.ContainsKey(t)) {
                                 cs.Add(allComponents[t]);
                             } else {
-                                continue;
+                                didNotFindAllColumns = true;
+                                break;
                             }
                         }
-                        //cs.GroupBy(c =>)
-                        //var grouped = allComponents.GroupBy(c => c.Value);
+                        if (didNotFindAllColumns) { continue; }
+
+                        var smallest = cs.Aggregate(cs[0],
+                            (shortest, next) =>
+                                next.Count < shortest.Count ? next : shortest);
+
+                        // Use shortest to check for tuple matches
+                        cs.Remove(smallest);
+                        // The rest of the columns
+                        var rest = cs; 
+                        foreach (var component in smallest) {
+                            foreach (var column in rest) {
+                                
+                            }
+                        }
+
+                        //var shortest = cs.Aggregate();
+                        //Console.WriteLine("Shortest: " + shortest);
                     }
 
                 } else {
