@@ -12,7 +12,7 @@ namespace Engineless {
 
     public abstract class Component { }
     // These empty classes are used to what resources to fetch
-    public class Query<T> { IEnumerable<KeyValuePair<int, T>> hits; }
+    public class Query<T> { public IEnumerable<KeyValuePair<int, T>> hits; }
     
     // State class for the ECS
     public class Engine : IECS {
@@ -153,7 +153,8 @@ namespace Engineless {
         public void AddEntity(List<Component> components) {
             Console.WriteLine("Adding Entity");
             foreach (Component c in components) {
-                if (allComponents[c.GetType()] == null) {
+                if (!allComponents.ContainsKey(c.GetType())
+                        || allComponents[c.GetType()] == null) {
                     // First component of this type
                     allComponents[c.GetType()] = new();
                 }

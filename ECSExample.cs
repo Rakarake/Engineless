@@ -6,11 +6,18 @@ using Engineless;
 class ECSExample {
 
     void StartupSystem(IECS ecs) {
-        ecs.AddEntity(new List<Component>());
+        ecs.AddEntity(new List<Component>() {
+                    new DuckAspects() { greatQuack = "QUACK QUACK QUACK 🦜" },
+                    new InspirationalQuote() { text = "I could eat an octorock!?" },
+                });
     }
 
-    void SuperSystem(Query<(DuckAspects, InspirationalQuote)> ok) {
-        
+    void SuperSystem(Query<(DuckAspects, InspirationalQuote)> q) {
+        foreach (var hit in q.hits) {
+            var (duckAspects, inspirationalQuote) = hit.Value;
+            Console.WriteLine("Quack: " + duckAspects.greatQuack);
+            Console.WriteLine("Inspire me!: " + inspirationalQuote.text);
+        }
     }
 
     public void Example() {
@@ -23,11 +30,11 @@ class ECSExample {
     }
 }
 
-class DuckAspects {
+class DuckAspects : Component {
     public String greatQuack;
 }
 
-class InspirationalQuote {
+class InspirationalQuote : Component {
     public String text;
 }
 
