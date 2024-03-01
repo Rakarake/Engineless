@@ -129,15 +129,13 @@ namespace Engineless {
                                 }
                             }
                             if (!tupleComplete) {
-                                fieldInfo.SetValue(queryInstance, RCreateEmptyList(typeArgument));
-                                systemArguments.Add(queryInstance);
                                 continue;
                             } 
                             // Construct the tuple to add to queryResult
-                            queryResult.Add(RGetTuple(tupleComponents));
-                            
+                            queryResult.Add(new KeyValuePair<int, Object>(c.Key, RGetTuple(tupleComponents)));
                         }
-                        systemArguments.Add(queryResult);
+                        fieldInfo.SetValue(queryInstance, queryResult);
+                        systemArguments.Add(queryInstance);
                     }
 
                 } else {
@@ -147,6 +145,8 @@ namespace Engineless {
             }
             Console.WriteLine("SystemArguments:");
             foreach (var e in systemArguments) { Console.WriteLine("  * " + e); }
+            // Create an object with the right type information
+            
             system.DynamicInvoke(systemArguments.ToArray());
         }
 
