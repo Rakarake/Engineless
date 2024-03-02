@@ -12,7 +12,7 @@ namespace Engineless {
 
     public abstract class Component { }
     // These empty classes are used to what resources to fetch
-    public class Query<T> { public IEnumerable<KeyValuePair<int, T>> hits; }
+    public class Query<T> { public List<KeyValuePair<int, T>> hits; }
     
     // State class for the ECS
     public class Engine : IECS {
@@ -112,11 +112,25 @@ namespace Engineless {
                             (shortest, next) =>
                                 next.Item2.Count < shortest.Item2.Count ? next : shortest);
 
+                        // NOTE
+                        // Create list of object that will be provided as the
+                        // result of the query
+                        Type tupleListGenericType = Type.GetType("System.Tuple`" + cs.Count);
+                        Type[] tupleListTypeArgs = cs.Select(p => p.Item1).ToArray();
+                        Type tupleListSpecificType = tupleListGenericType.MakeGenericType(tupleListTypeArgs);
+                        Type tupleKvPairSpecificType = typeof(KeyValuePair<,>).MakeGenericType(typeof(int), tupleListSpecificType);
+                        Type tupleKvPairListType = typeof(List<>).MakeGenericType(tupleKvPairSpecificType);
+                        Object queryResultDynamicList = Activator.CreateInstance(tupleKvPairListType);
+                        MethodInfo tupleKvPairAddInfo = tupleKvPairListType.GetMethod("Add", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+
+                        List<Object> queryResult = new();
+
                         // Use shortest to check for tuple matches
                         cs.Remove(smallest);
                         var restOfColumns = cs;
                         // List of tuples of the query
-                        List<Object> queryResult = new();
+                        // TODO: fix so that list is initialized with the right type
+                        // information instead of 'Object'
                         foreach (var c in smallest.Item2) {
                             List<(Type, Object)> tupleComponents = new() { (smallest.Item1, c.Value) };
                             bool tupleComplete = true;
@@ -132,9 +146,12 @@ namespace Engineless {
                                 continue;
                             } 
                             // Construct the tuple to add to queryResult
-                            queryResult.Add(new KeyValuePair<int, Object>(c.Key, RGetTuple(tupleComponents)));
+                            queryResult.Add((Object) new KeyValuePair<int, Object>(c.Key, RGetTuple(tupleComponents)));
                         }
-                        fieldInfo.SetValue(queryInstance, queryResult);
+                        foreach (var kvPair in queryResult) {
+                            tupleKvPairAddInfo.Invoke(queryResultDynamicList, new Object[] {kvPair} );
+                        }
+                        fieldInfo.SetValue(queryInstance, queryResultDynamicList);
                         systemArguments.Add(queryInstance);
                     }
 
@@ -169,14 +186,14 @@ namespace Engineless {
             Type[] typeArgs = input.Select(p => p.Item1).ToArray();
             Object[] valueArgs = input.Select(p => p.Item2).ToArray();
             Type specificType = genericType.MakeGenericType(typeArgs);
-            object[] constructorArguments = valueArgs.Cast<object>().ToArray();
-            return Activator.CreateInstance(specificType, constructorArguments);
+            var i = Activator.CreateInstance(specificType, valueArgs);
+            Console.WriteLine("New instance: " + i);
+            return i;
         }
 
         private Object RCreateEmptyList(Type t) {
             return Activator.CreateInstance(typeof(List<>).MakeGenericType(t));
         }
-
     }
 
     // Resource passed to systems to provide functionality to create/remove
