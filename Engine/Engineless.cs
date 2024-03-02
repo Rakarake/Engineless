@@ -48,26 +48,24 @@ namespace Engineless {
         }
 
         private void HandleSystem(Delegate system) {
-            // Example system:
-            // "time" here is a "resource" in the form of a component
-            // void MoveLeft(ECS ecs, Query<Time> time, Query<(Transform Transform, Color Color, Engineless.Entity Entity)> q)
             MethodInfo methodInfo = system.Method;
             ParameterInfo[] parameters = methodInfo.GetParameters();
             List<Object> systemArguments = new();
             foreach (ParameterInfo parameter in parameters) {
-                if (parameter.ParameterType == typeof(IECS)) {
+                Type parameterType = parameter.ParameterType;
+                if (parameterType == typeof(IECS)) {
                     systemArguments.Add(this);
-                } else if (parameter.ParameterType.Name.Substring(0, 5) == "Query") {
+                } else if (parameterType.IsGenericType && parameterType.GetGenericTypeDefinition() == typeof(Query<>)) {
                     // Two cases:
                     // * One generic argument, provide that list directly
                     // * Tuple of arguments
-                    Type typeArgument = parameter.ParameterType.GetGenericArguments()[0];
+                    Type typeArgument = parameterType.GetGenericArguments()[0];
 
                     // Create the query object
-                    var queryGenericType = typeof(Query<>);
-                    var queryGenericTypeFulfilled = queryGenericType.MakeGenericType(typeArgument);
-                    var queryInstance = Activator.CreateInstance(queryGenericTypeFulfilled);
-                    var fieldInfo = queryGenericTypeFulfilled.GetField("hits", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+                    var queryType = typeof(Query<>);
+                    var queryTypeFulfilled = queryType.MakeGenericType(typeArgument);
+                    var queryInstance = Activator.CreateInstance(queryTypeFulfilled);
+                    var fieldInfo = queryTypeFulfilled.GetField("hits", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
                     Type[] queryTypes = typeArgument.GetGenericArguments();
 
                     if (queryTypes == null || queryTypes.Length == 0) {
