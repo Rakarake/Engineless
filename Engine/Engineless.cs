@@ -79,7 +79,7 @@ namespace Engineless {
                         // Two or more arguments
                         // Only interested in the columns with the tuple types
                         // All must be present
-                        // Type needed to construct the tuples
+                        // 'Type' needed to construct the tuples
                         List<(Type, Dictionary<int, Component>)> cs = new();
                         bool componentColumnsExist = true;
                         foreach (Type t in queryTypes) {
@@ -121,6 +121,7 @@ namespace Engineless {
                         // Use shortest to check for tuple matches
                         cs.Remove(smallest);
                         var restOfColumns = cs;
+
                         // List of tuples of the query
                         foreach (var c in smallest.Item2) {
                             List<(Type, Object)> tupleComponents = new() { (smallest.Item1, c.Value) };
