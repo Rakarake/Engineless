@@ -36,9 +36,9 @@
           nugetDeps = nuget-packageslock2nix.lib {
             system = system;
             name = pname;
-            lockfiles = [
-              ./packages.lock.json
-            ];
+            #lockfiles = [
+            #  ./packages.lock.json
+            #];
           };
           LD_LIBRARY_PATH = pkgs.lib.makeLibraryPath deps;
         };

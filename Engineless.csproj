@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <AssemblyName>Engineless</AssemblyName>
+    <PackageId>Engineless</PackageId>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <Authors>William Bodin</Authors>
+    <NeutralLanguage>en-US</NeutralLanguage>
+    <AssemblyTitle>Engineless</AssemblyTitle>
+    <Description>A simple ECS engine using rutnime reflection to provide systems with components.</Description>
+    <Copyright>MIT</Copyright>
+    <PackageDescription>A simple ECS engine using rutnime reflection to provide systems with components.</PackageDescription>
+    <RepositoryUrl>https://github.com/Rakarake/engineless</RepositoryUrl>
+  </PropertyGroup>
+</Project>

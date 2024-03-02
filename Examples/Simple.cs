@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Engineless;
 
 // Test ECS
-class ECSExample {
+class Simple {
 
     void StartupSystem(IECS ecs) {
         Console.WriteLine("Starting it up with the startup system");
