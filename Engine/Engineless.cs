@@ -153,9 +153,8 @@ namespace Engineless {
                                 continue;
                             } 
                             // Construct the tuple to add to queryResult
-                            var kvInstance = Activator.CreateInstance(kvPairType);
+                            var kvInstance = Activator.CreateInstance(kvPairType, c.Key, RGetTuple(tupleComponents));
                             queryResult.Add(kvInstance);
-                            //queryResult.Add((Object) new KeyValuePair<int, Object>(c.Key, RGetTuple(tupleComponents)));
                         }
                         foreach (var kvPair in queryResult) {
                             tupleKvPairAddInfo.Invoke(queryResultDynamicList, new Object[] {kvPair} );
