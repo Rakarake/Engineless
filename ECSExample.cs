@@ -6,6 +6,7 @@ using Engineless;
 class ECSExample {
 
     void StartupSystem(IECS ecs) {
+        Console.WriteLine("Starting it up with the startup system");
         ecs.AddEntity(new List<Component>() {
                     new DuckAspects() { greatQuack = "QUACK QUACK QUACK 🦜" },
                     new InspirationalQuote() { text = "I could eat an octorock!?" },
@@ -14,7 +15,6 @@ class ECSExample {
 
     void SuperSystem(Query<Tuple<DuckAspects, InspirationalQuote>> q) {
         foreach (var hit in q.hits) {
-            Console.WriteLine("The KeyValuePair and tuple: " + hit);
             var (duckAspects, inspirationalQuote) = hit.Value;
             Console.WriteLine("Quack: " + duckAspects.greatQuack);
             Console.WriteLine("Inspire me!: " + inspirationalQuote.text);

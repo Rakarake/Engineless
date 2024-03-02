@@ -55,12 +55,9 @@ namespace Engineless {
             ParameterInfo[] parameters = methodInfo.GetParameters();
             List<Object> systemArguments = new();
             foreach (ParameterInfo parameter in parameters) {
-                Console.WriteLine("Type name: " + parameter.ParameterType.Name);
                 if (parameter.ParameterType == typeof(IECS)) {
-                    Console.WriteLine("Found IECS 🔥");
                     systemArguments.Add(this);
                 } else if (parameter.ParameterType.Name.Substring(0, 5) == "Query") {
-                    Console.WriteLine("About to process Query");
                     // Two cases:
                     // * One generic argument, provide that list directly
                     // * Tuple of arguments
@@ -71,14 +68,11 @@ namespace Engineless {
                     var queryGenericType = typeof(Query<>);
                     var queryGenericTypeFulfilled = queryGenericType.MakeGenericType(typeArgument);
                     var queryInstance = Activator.CreateInstance(queryGenericTypeFulfilled);
-                    Console.WriteLine("QueryInstance: " + queryInstance);
                     var fieldInfo = queryGenericTypeFulfilled.GetField("hits", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-                    Console.WriteLine("FieldInfo: " + fieldInfo);
                     Type[] queryTypes = typeArgument.GetGenericArguments();
 
                     if (queryTypes == null || queryTypes.Length == 0) {
                         // One argument
-                        Console.WriteLine("One argument");
                         fieldInfo.SetValue(queryInstance,
                                 allComponents.ContainsKey(typeArgument) ?
                                     allComponents[typeArgument] :
@@ -86,7 +80,6 @@ namespace Engineless {
                         systemArguments.Add(queryInstance);
                     } else {
                         // Two or more arguments
-                        Console.WriteLine("Two argument");
                         // Only interested in the columns with the tuple types
                         // All must be present
                         // Type needed to construct the tuples
@@ -100,7 +93,6 @@ namespace Engineless {
                             }
                         }
                         if (!componentColumnsExist) { 
-                            Console.WriteLine("SUPER LIST: " + RCreateEmptyList(typeArgument));
                             fieldInfo.SetValue(queryInstance, RCreateEmptyList(
                                         typeof(KeyValuePair<,>).MakeGenericType(typeof(int), typeArgument)
                                         ));
@@ -111,10 +103,6 @@ namespace Engineless {
                         var smallest = cs.Aggregate(cs[0],
                             (shortest, next) =>
                                 next.Item2.Count < shortest.Item2.Count ? next : shortest);
-
-                        // NOTE
-                        // Create list of object that will be provided as the
-                        // result of the query
 
                         // Type: (c1, c2, c3)      (c1-3 are known types)
                         Type tupleListGenericType = Type.GetType("System.Tuple`" + cs.Count);
@@ -127,17 +115,16 @@ namespace Engineless {
                         // Type: List<KveyValuePair<int, (c1, c2, c3)>>
                         Type listType = typeof(List<>).MakeGenericType(kvPairType);
 
-                        Object queryResultDynamicList = Activator.CreateInstance(listType);
-                        MethodInfo tupleKvPairAddInfo = listType.GetMethod("Add", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+                        // Instance: List<KveyValuePair<int, (c1, c2, c3)>>
+                        Object listInstance = Activator.CreateInstance(listType);
 
-                        List<Object> queryResult = new();
+                        // MethodInfo: List<KveyValuePair<int, (c1, c2, c3)>>.Add
+                        MethodInfo listAdd = listType.GetMethod("Add", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
 
                         // Use shortest to check for tuple matches
                         cs.Remove(smallest);
                         var restOfColumns = cs;
                         // List of tuples of the query
-                        // TODO: fix so that list is initialized with the right type
-                        // information instead of 'Object'
                         foreach (var c in smallest.Item2) {
                             List<(Type, Object)> tupleComponents = new() { (smallest.Item1, c.Value) };
                             bool tupleComplete = true;
@@ -154,12 +141,9 @@ namespace Engineless {
                             } 
                             // Construct the tuple to add to queryResult
                             var kvInstance = Activator.CreateInstance(kvPairType, c.Key, RGetTuple(tupleComponents));
-                            queryResult.Add(kvInstance);
+                            listAdd.Invoke(listInstance, new Object[]{kvInstance});
                         }
-                        foreach (var kvPair in queryResult) {
-                            tupleKvPairAddInfo.Invoke(queryResultDynamicList, new Object[] {kvPair} );
-                        }
-                        fieldInfo.SetValue(queryInstance, queryResultDynamicList);
+                        fieldInfo.SetValue(queryInstance, listInstance);
                         systemArguments.Add(queryInstance);
                     }
 
@@ -168,15 +152,10 @@ namespace Engineless {
                 }
                 
             }
-            Console.WriteLine("SystemArguments:");
-            foreach (var e in systemArguments) { Console.WriteLine("  * " + e); }
-            // Create an object with the right type information
-            
             system.DynamicInvoke(systemArguments.ToArray());
         }
 
         public void AddEntity(List<Component> components) {
-            Console.WriteLine("Adding Entity");
             foreach (Component c in components) {
                 if (!allComponents.ContainsKey(c.GetType())
                         || allComponents[c.GetType()] == null) {
@@ -195,7 +174,6 @@ namespace Engineless {
             Object[] valueArgs = input.Select(p => p.Item2).ToArray();
             Type specificType = genericType.MakeGenericType(typeArgs);
             var i = Activator.CreateInstance(specificType, valueArgs);
-            Console.WriteLine("New instance: " + i);
             return i;
         }
 
