@@ -12,8 +12,9 @@ class ECSExample {
                 });
     }
 
-    void SuperSystem(Query<(DuckAspects, InspirationalQuote)> q) {
+    void SuperSystem(Query<Tuple<DuckAspects, InspirationalQuote>> q) {
         foreach (var hit in q.hits) {
+            Console.WriteLine("The KeyValuePair and tuple: " + hit);
             var (duckAspects, inspirationalQuote) = hit.Value;
             Console.WriteLine("Quack: " + duckAspects.greatQuack);
             Console.WriteLine("Inspire me!: " + inspirationalQuote.text);

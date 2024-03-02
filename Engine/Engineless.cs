@@ -115,13 +115,20 @@ namespace Engineless {
                         // NOTE
                         // Create list of object that will be provided as the
                         // result of the query
+
+                        // Type: (c1, c2, c3)      (c1-3 are known types)
                         Type tupleListGenericType = Type.GetType("System.Tuple`" + cs.Count);
                         Type[] tupleListTypeArgs = cs.Select(p => p.Item1).ToArray();
-                        Type tupleListSpecificType = tupleListGenericType.MakeGenericType(tupleListTypeArgs);
-                        Type tupleKvPairSpecificType = typeof(KeyValuePair<,>).MakeGenericType(typeof(int), tupleListSpecificType);
-                        Type tupleKvPairListType = typeof(List<>).MakeGenericType(tupleKvPairSpecificType);
-                        Object queryResultDynamicList = Activator.CreateInstance(tupleKvPairListType);
-                        MethodInfo tupleKvPairAddInfo = tupleKvPairListType.GetMethod("Add", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+                        Type tupleType = tupleListGenericType.MakeGenericType(tupleListTypeArgs);
+
+                        // Type: KveyValuePair<int, (c1, c2, c3)>
+                        Type kvPairType = typeof(KeyValuePair<,>).MakeGenericType(typeof(int), tupleType);
+
+                        // Type: List<KveyValuePair<int, (c1, c2, c3)>>
+                        Type listType = typeof(List<>).MakeGenericType(kvPairType);
+
+                        Object queryResultDynamicList = Activator.CreateInstance(listType);
+                        MethodInfo tupleKvPairAddInfo = listType.GetMethod("Add", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
 
                         List<Object> queryResult = new();
 
@@ -146,7 +153,9 @@ namespace Engineless {
                                 continue;
                             } 
                             // Construct the tuple to add to queryResult
-                            queryResult.Add((Object) new KeyValuePair<int, Object>(c.Key, RGetTuple(tupleComponents)));
+                            var kvInstance = Activator.CreateInstance(kvPairType);
+                            queryResult.Add(kvInstance);
+                            //queryResult.Add((Object) new KeyValuePair<int, Object>(c.Key, RGetTuple(tupleComponents)));
                         }
                         foreach (var kvPair in queryResult) {
                             tupleKvPairAddInfo.Invoke(queryResultDynamicList, new Object[] {kvPair} );
