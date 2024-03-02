@@ -61,7 +61,6 @@ namespace Engineless {
                     // Two cases:
                     // * One generic argument, provide that list directly
                     // * Tuple of arguments
-                    // There is only one type argument of Query
                     Type typeArgument = parameter.ParameterType.GetGenericArguments()[0];
 
                     // Create the query object
@@ -105,7 +104,7 @@ namespace Engineless {
                                 next.Item2.Count < shortest.Item2.Count ? next : shortest);
 
                         // Type: (c1, c2, c3)      (c1-3 are known types)
-                        Type tupleListGenericType = Type.GetType("System.Tuple`" + cs.Count);
+                        Type tupleListGenericType = Type.GetType("System.ValueTuple`" + cs.Count);
                         Type[] tupleListTypeArgs = cs.Select(p => p.Item1).ToArray();
                         Type tupleType = tupleListGenericType.MakeGenericType(tupleListTypeArgs);
 
@@ -169,7 +168,7 @@ namespace Engineless {
 
         // Reflection helper methods ('R' is for reflection)
         private Object RGetTuple(List<(Type, Object)> input) {
-            Type genericType = Type.GetType("System.Tuple`" + input.Count);
+            Type genericType = Type.GetType("System.ValueTuple`" + input.Count);
             Type[] typeArgs = input.Select(p => p.Item1).ToArray();
             Object[] valueArgs = input.Select(p => p.Item2).ToArray();
             Type specificType = genericType.MakeGenericType(typeArgs);

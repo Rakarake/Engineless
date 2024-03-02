@@ -13,7 +13,7 @@ class ECSExample {
                 });
     }
 
-    void SuperSystem(Query<Tuple<DuckAspects, InspirationalQuote>> q) {
+    void SuperSystem(Query<(DuckAspects, InspirationalQuote)> q) {
         foreach (var hit in q.hits) {
             var (duckAspects, inspirationalQuote) = hit.Value;
             Console.WriteLine("Quack: " + duckAspects.greatQuack);
