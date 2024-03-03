@@ -35,8 +35,8 @@ namespace Engineless {
         // Game loop
         public void Start() {
             Console.WriteLine("Starting Engine!");
-            foreach (Delegate system in startupSystems) {
-                HandleSystem(system);
+            for (int i = 0; i < startupSystems.Count(); i++) {
+                HandleSystem(startupSystems[i]);
             }
             // Start game loop
             while (running) {
