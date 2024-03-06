@@ -96,10 +96,6 @@ namespace Engineless {
                             continue;
                         }
 
-                        var smallest = cs.Aggregate(cs[0],
-                            (shortest, next) =>
-                                next.Item2.Count < shortest.Item2.Count ? next : shortest);
-
                         // Type: (c1, c2, c3)      (c1-3 are known types)
                         Type tupleListGenericType = Type.GetType("System.ValueTuple`" + cs.Count);
                         Type[] tupleListTypeArgs = cs.Select(p => p.Item1).ToArray();
@@ -117,13 +113,14 @@ namespace Engineless {
                         // MethodInfo: List<KveyValuePair<int, (c1, c2, c3)>>.Add
                         MethodInfo listAdd = listType.GetMethod("Add", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
 
-                        // Use shortest to check for tuple matches
-                        cs.Remove(smallest);
+                        // Muh implementation
+                        var firstColumn = cs[0];
+                        cs.RemoveAt(0);
                         var restOfColumns = cs;
 
                         // List of tuples of the query
-                        foreach (var c in smallest.Item2) {
-                            List<(Type, Object)> tupleComponents = new() { (smallest.Item1, c.Value) };
+                        foreach (var c in firstColumn.Item2) {
+                            List<(Type, Object)> tupleComponents = new() { (firstColumn.Item1, c.Value) };
                             bool tupleComplete = true;
                             foreach (var column in restOfColumns) {
                                 if (column.Item2.ContainsKey(c.Key)) {
@@ -137,6 +134,7 @@ namespace Engineless {
                                 continue;
                             } 
                             // Construct the tuple to add to queryResult
+                            var tuple = RGetTuple(tupleComponents);
                             var kvInstance = Activator.CreateInstance(kvPairType, c.Key, RGetTuple(tupleComponents));
                             listAdd.Invoke(listInstance, new Object[]{kvInstance});
                         }
