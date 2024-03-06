@@ -10,7 +10,6 @@ namespace Engineless {
         Update,
     }
 
-    public abstract class Component { }
     // These empty classes are used to what resources to fetch
     public class Query<T> { public List<KeyValuePair<int, T>> hits; }
     
@@ -18,7 +17,7 @@ namespace Engineless {
     public class Engine : IECS {
         private List<Delegate> updateSystems = new();
         private List<Delegate> startupSystems = new();
-        private Dictionary<Type, Dictionary<int, Component>> allComponents = new();
+        private Dictionary<Type, Dictionary<int, Object>> allComponents = new();
         private int entityIndex = 0;
         private bool running = true;
 
@@ -80,7 +79,7 @@ namespace Engineless {
                         // Only interested in the columns with the tuple types
                         // All must be present
                         // 'Type' needed to construct the tuples
-                        List<(Type, Dictionary<int, Component>)> cs = new();
+                        List<(Type, Dictionary<int, Object>)> cs = new();
                         bool componentColumnsExist = true;
                         foreach (Type t in queryTypes) {
                             if (allComponents.ContainsKey(t)) {
@@ -153,8 +152,8 @@ namespace Engineless {
             system.DynamicInvoke(systemArguments.ToArray());
         }
 
-        public void AddEntity(List<Component> components) {
-            foreach (Component c in components) {
+        public void AddEntity(List<Object> components) {
+            foreach (Object c in components) {
                 if (!allComponents.ContainsKey(c.GetType())
                         || allComponents[c.GetType()] == null) {
                     // First component of this type
@@ -183,6 +182,6 @@ namespace Engineless {
     // Resource passed to systems to provide functionality to create/remove
     // entities, components and systems
     public interface IECS {
-        public void AddEntity(List<Component> components);
+        public void AddEntity(List<Object> components);
     }
 }
