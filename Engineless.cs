@@ -5,6 +5,10 @@ using System.Linq;
 
 namespace Engineless {
 
+    public class Wrapper<T> {
+        public T item;
+    }
+
     public enum Event {
         Startup,
         Update,
