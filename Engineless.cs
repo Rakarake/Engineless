@@ -43,7 +43,6 @@ namespace Engineless {
             }
             // Start game loop
             while (running) {
-                System.Threading.Thread.Sleep(5);
                 foreach (Delegate system in updateSystems) {
                     HandleSystem(system);
                 }
