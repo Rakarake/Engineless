@@ -164,6 +164,22 @@ namespace Engineless {
             entityIndex += 1;
         }
 
+        public void RemoveEntity(int entity) {
+            foreach (var column in allComponents) {
+                if (column.Value.ContainsKey(entity)) {
+                    column.Value.Remove(entity);
+                }
+            }
+        }
+
+        public void RemoveComponent(int entity, Type component) {
+            if (allComponents.ContainsKey(component)) {
+                if (allComponents[component].ContainsKey(entity)) {
+                    allComponents[component].Remove(entity);
+                }
+            }
+        }
+
         // Reflection helper methods ('R' is for reflection)
         private Object RGetTuple(List<(Type, Object)> input) {
             Type genericType = Type.GetType("System.ValueTuple`" + input.Count);
@@ -184,5 +200,7 @@ namespace Engineless {
     public interface IECS {
         public void AddEntity(List<Object> components);
         public void AddSystem(Event e, Delegate system);
+        public void RemoveEntity(int entity);
+        public void RemoveComponent(int entity, Type component);
     }
 }
