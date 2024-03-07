@@ -25,14 +25,13 @@ namespace Engineless {
         private int entityIndex = 0;
         private bool running = true;
 
-        public Engine AddSystem(Event e, Delegate system) {
+        public void AddSystem(Event e, Delegate system) {
             if (e == Event.Startup) {
                 startupSystems.Add(system);
             }
             if (e == Event.Update) {
                 updateSystems.Add(system);
             }
-            return this;
         }
 
         // Game loop
@@ -184,5 +183,6 @@ namespace Engineless {
     // entities, components and systems
     public interface IECS {
         public void AddEntity(List<Object> components);
+        public void AddSystem(Event e, Delegate system);
     }
 }
