@@ -5,6 +5,12 @@ using System.Linq;
 
 namespace Engineless {
 
+    namespace Utils {
+        public class Transform {
+            public (int, int) position;
+        }
+    }
+
     public class Wrapper<T> {
         public T item;
     }
