@@ -35,9 +35,8 @@ ecs.AddEntity(new List<Object>() {
     "Hi Mark!",
 });
 
-ecs
-    .AddSystem(Event.Update, SimpleSystem)
-    .Start();
+ecs.AddSystem(Event.Update, SimpleSystem);
+ecs.Start();
 ```
 
 ## Some design decisions

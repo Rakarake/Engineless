@@ -16,12 +16,14 @@ namespace Engineless {
 
     // These empty classes are used to what resources to fetch
     public class Query<T> { public List<KeyValuePair<int, T>> hits; }
+    public class Res<T> { public T hit; }
     
     // State class for the ECS
     public class Engine : IECS {
         private List<Delegate> updateSystems = new();
         private List<Delegate> startupSystems = new();
         private Dictionary<Type, Dictionary<int, Object>> allComponents = new();
+        private Dictionary<Type, Object> allResources = new();
         private int entityIndex = 0;
         private bool running = true;
 
@@ -56,7 +58,21 @@ namespace Engineless {
                 Type parameterType = parameter.ParameterType;
                 if (parameterType == typeof(IECS)) {
                     systemArguments.Add(this);
-                } else if (parameterType.IsGenericType && parameterType.GetGenericTypeDefinition() == typeof(Query<>)) {
+                }
+                else if (parameterType.IsGenericType && parameterType.GetGenericTypeDefinition() == typeof(Res<>)) {
+                    var t = parameterType.GetGenericArguments()[0];
+                    if (allResources.ContainsKey(t)) {
+                        // Construct the container
+                        var resType = typeof(Res<>).MakeGenericType(t);
+                        var resInstance = Activator.CreateInstance(resType);
+                        var resFieldInfo = resType.GetField("hit", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+                        resFieldInfo.SetValue(resInstance, allResources[t]);
+                        systemArguments.Add(resInstance);
+                    } else {
+                        return;
+                    }
+                }
+                else if (parameterType.IsGenericType && parameterType.GetGenericTypeDefinition() == typeof(Query<>)) {
                     // Two cases:
                     // * One generic argument, provide that list directly
                     // * Tuple of arguments
@@ -188,6 +204,15 @@ namespace Engineless {
             }
         }
 
+        // Overwrites already existing resources
+        public void SetResource(Object resource) {
+            allResources[resource.GetType()] = resource;
+        }
+
+        public void UnsetResource(Type type) {
+            allResources.Remove(type);
+        }
+
         // Reflection helper methods ('R' is for reflection)
         private Object RGetTuple(List<(Type, Object)> input) {
             Type genericType = Type.GetType("System.ValueTuple`" + input.Count);
@@ -210,5 +235,7 @@ namespace Engineless {
         public void AddSystem(Event e, Delegate system);
         public void RemoveEntity(int entity);
         public void RemoveComponent(int entity, Type component);
+        public void SetResource(Object resource);
+        public void UnsetResource(Type type);
     }
 }
