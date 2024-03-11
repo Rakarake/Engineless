@@ -71,10 +71,18 @@ namespace Engineless {
 
                     if (queryTypes == null || queryTypes.Length == 0) {
                         // One argument
-                        fieldInfo.SetValue(queryInstance,
-                                allComponents.ContainsKey(typeArgument) ?
-                                    allComponents[typeArgument] :
-                                    RCreateEmptyList(typeArgument));
+                        Type kvPairType = typeof(KeyValuePair<,>).MakeGenericType(typeof(int), typeArgument);
+                        Type listType = typeof(List<>).MakeGenericType(kvPairType);
+                        Object list = Activator.CreateInstance(listType);
+                        MethodInfo listAdd = listType.GetMethod("Add", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+                        if (allComponents.ContainsKey(typeArgument)) {
+                            foreach (var component in allComponents[typeArgument]) {
+                                // Convert to a KvPair with the right runtime type
+                                var kvPairInstance = Activator.CreateInstance(kvPairType, component.Key, component.Value);
+                                listAdd.Invoke(list, new Object[] {kvPairInstance});
+                            }
+                        }
+                        fieldInfo.SetValue(queryInstance, list);
                         systemArguments.Add(queryInstance);
                     } else {
                         // Two or more arguments
