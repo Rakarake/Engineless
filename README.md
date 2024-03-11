@@ -6,6 +6,10 @@ Note that components must be reference types if you wish to modify them
 since the you will always get copies of value types.
 A workaround is wrapping value types in your own classes.
 
+The engine is currently not optimized for speed, it does not take
+locality into consideration, and queries are of O(n) complexity (even
+ones that query one component).
+
 If you know how to solve this, tell me 😳 (the value types are boxed, so
 the solution might not be that far off, maybe).
 
