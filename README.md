@@ -13,6 +13,9 @@ ones that query one component).
 There are few saftey checks, for example, systems with faulty arguments
 will be reported only when they are about to be used.
 
+The order of registration of the systems determine in which order
+they will be executed.
+
 If you know how to solve this, tell me 😳 (the value types are boxed, so
 the solution might not be that far off, maybe).
 
@@ -46,6 +49,9 @@ ecs.Start();
 There was a separation of the interface of the engine, before and after
 the engine is started, so that you say, cannot start it again (would make
 no sense).
+
+## Wish list / missing features
+A way of adding / removing / reoredering systems.
 
 "No engines?"
 
