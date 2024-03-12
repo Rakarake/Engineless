@@ -10,6 +10,9 @@ The engine is currently not optimized for speed, it does not take
 locality into consideration, and queries are of O(n) complexity (even
 ones that query one component).
 
+There are few saftey checks, for example, systems with faulty arguments
+will be reported only when they are about to be used.
+
 If you know how to solve this, tell me 😳 (the value types are boxed, so
 the solution might not be that far off, maybe).
 

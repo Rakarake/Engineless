@@ -6,8 +6,9 @@ using System.Linq;
 namespace Engineless {
 
     namespace Utils {
-        public class Transform {
+        public class Transform2D {
             public (int, int) position;
+            public (int, int) scale;
         }
     }
 
