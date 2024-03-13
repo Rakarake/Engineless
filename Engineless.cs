@@ -7,8 +7,10 @@ namespace Engineless {
 
     namespace Utils {
         public class Transform2D {
-            public (int, int) position;
-            public (double, double) scale;
+            public double x;
+            public double y;
+            public double scaleX;
+            public double scaleY;
         }
         public class Color {
             public byte r;
