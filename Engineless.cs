@@ -9,8 +9,9 @@ namespace Engineless {
         public class Transform2D {
             public double x;
             public double y;
-            public double scaleX;
-            public double scaleY;
+            public double scaleX = 1;
+            public double scaleY = 1;
+            public double rotation;
         }
         public class Color {
             public byte r;
